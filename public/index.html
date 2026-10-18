@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interactive Redis-backed API rate limiter testing dashboard.">
+  <title>Rate Limiter Tester</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 3 41 10v12c0 11-7 18-17 23C14 40 7 33 7 22V10L24 3Z" fill="currentColor"/><path d="m16 24 5 5 11-12" fill="none" stroke="#102b3d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div><h1>Rate Limiter Tester</h1><p>Test your API rate limiting with real-time results</p></div>
+    </div>
+    <div class="connection"><span id="connectionDot" class="dot"></span><span id="connectionText">Checking server...</span><span class="redis-pill"><span aria-hidden="true">▤</span> Redis</span></div>
+  </header>
+
+  <main class="layout">
+    <section class="panel send-panel">
+      <h2>Send Requests</h2>
+      <label for="requestCount">Number of requests</label>
+      <div class="slider-value"><strong id="requestCountValue">10</strong><span>requests</span></div>
+      <input id="requestCount" type="range" min="1" max="50" value="10">
+      <div class="range-labels"><span>1</span><span>50</span></div>
+      <label class="endpoint-label">Request endpoint</label>
+      <div class="endpoint"><span class="method">GET</span><code>/api/test</code><button id="copyEndpoint" class="copy-btn" aria-label="Copy endpoint" title="Copy endpoint">▢</button></div>
+      <button id="sendBatch" class="btn btn-primary"><span>▷</span> Send Requests</button>
+      <button id="sendOne" class="btn btn-secondary"><span>↻</span> Send One Request</button>
+      <button id="resetStats" class="btn btn-quiet">Reset Dashboard Stats</button>
+    </section>
+
+    <section class="center-column">
+      <div class="stats-grid">
+        <article class="stat-card stat-blue"><div class="stat-icon">➤</div><div class="stat-label">Total Sent</div><div id="totalSent" class="stat-number">0</div><div class="stat-foot">requests</div></article>
+        <article class="stat-card stat-green"><div class="stat-icon">✓</div><div class="stat-label">Allowed</div><div id="allowedCount" class="stat-number">0</div><div class="stat-foot">requests</div></article>
+        <article class="stat-card stat-red"><div class="stat-icon">×</div><div class="stat-label">Rejected</div><div id="rejectedCount" class="stat-number">0</div><div class="stat-foot">requests</div></article>
+        <article class="stat-card stat-purple"><div class="stat-icon">◷</div><div class="stat-label">Cooldown Period</div><div id="cooldownValue" class="stat-number">—</div><div class="stat-foot">remaining</div></article>
+      </div>
+
+      <section id="limitBanner" class="notice notice-limit hidden" aria-live="polite">
+        <div class="notice-icon">◷</div><div class="notice-content"><h3>Rate Limit Reached</h3><p>You've hit the rate limit. You can send new requests after the cooldown period.</p><div class="progress-row"><div class="progress-track"><div id="cooldownProgress" class="progress-fill"></div></div><span id="cooldownText">0s remaining</span></div></div>
+      </section>
+      <section id="readyBanner" class="notice notice-info" aria-live="polite">
+        <div class="notice-icon">ⓘ</div><div class="notice-content"><h3 id="noticeTitle">Ready to test</h3><p id="noticeText">Each client IP can make 5 requests per 10-second window.</p></div>
+      </section>
+      <section id="errorBanner" class="notice notice-error hidden" aria-live="polite"><div class="notice-icon">!</div><div class="notice-content"><h3>Connection problem</h3><p id="errorText">Unable to contact the API.</p></div></section>
+    </section>
+
+    <aside class="panel config-panel">
+      <h2>Test Configuration</h2>
+      <div class="config-item"><div class="config-icon">☷</div><div><span>Request limit</span><strong id="configLimit">5 requests</strong></div></div>
+      <div class="config-item"><div class="config-icon">◷</div><div><span>Time window</span><strong id="configWindow">10 seconds</strong></div></div>
+      <div class="config-item"><div class="config-icon">&lt;/&gt;</div><div><span>Endpoint</span><strong class="mono">GET /api/test</strong></div></div>
+      <div class="config-item"><div class="config-icon">♙</div><div><span>Client ID</span><strong id="clientId">Detected from your connection</strong></div></div>
+    </aside>
+
+    <section class="panel history-panel">
+      <div class="history-heading"><h2>Request History</h2><button id="clearHistory" class="btn btn-small"><span>♧</span> Clear History</button></div>
+      <div class="table-wrap"><table><thead><tr><th>#</th><th>Time</th><th>Status</th><th>Response</th><th>Remaining</th><th>Cooldown</th></tr></thead><tbody id="historyBody"><tr class="empty-row"><td colspan="6">No requests yet. Send a request to begin testing.</td></tr></tbody></table></div>
+      <p class="history-note">History and counters are kept in this browser tab and reset when you reload the page.</p>
+    </section>
+  </main>
+  <footer>Built with Node.js, Express and Redis <span>•</span> Fixed-window rate limiter demo</footer>
+  <script src="/script.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "rate-limiter-tester",
+  "version": "1.0.0",
+  "description": "Redis-backed API rate limiter with a real-time browser dashboard",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "check": "node --check src/server.js && node --check src/rateLimiter.js && node --check public/script.js"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "redis": "^4.7.0"
+  }
+}
